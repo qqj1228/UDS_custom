@@ -1,0 +1,22 @@
+.ui.vertical.menu {
+    width: 10rem;
+    text-align: center;
+}
+
+.main-content {
+    margin-left: 10rem;
+    padding: 1rem;
+}
+
+.ui.grid.main {
+    margin: 0.5rem;
+}
+
+.handle {
+    cursor: move;
+}
+
+.ui.list {
+    margin-right: 0;
+    min-height: 1rem;
+}

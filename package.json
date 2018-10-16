@@ -1,0 +1,32 @@
+{
+  "name": "uds-custom",
+  "version": "0.1.0",
+  "description": "an application to custom uds module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qqj1228/uds-custom.git"
+  },
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "keywords": [
+    "uds"
+  ],
+  "author": "qqj1228",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^3.0.3",
+    "eslint": "^5.6.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "gulp": "^3.9.1"
+  },
+  "dependencies": {
+    "ajv": "^6.5.4",
+    "jquery": "^3.3.1",
+    "mssql": "^4.2.1",
+    "sortablejs": "^1.7.0"
+  }
+}
