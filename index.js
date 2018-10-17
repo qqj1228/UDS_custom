@@ -2,27 +2,56 @@
 
 const ipc = require('electron').ipcRenderer;
 const Sortable = require('sortablejs');
-const sql = require('mssql');
-const fs = require('fs');
+const db = require('./db');
 
-let config = {};
-
-fs.readFile('./config.json', 'utf8', (err, data) => {
-    if (err) {
-        console.error(err);
-        return;
-    }
-    config = JSON.parse(data);
-});
-
-sql.on('error', (err) => {
-    console.error(err);
-});
+let vehicleTypeList = {};
+let ECUList = {};
 
 function menuItemActive(e) {
     $(e.target).addClass('active').closest('.ui.menu').find('.item')
         .not($(e.target))
         .removeClass('active');
+    $('#ECU-done').children().remove();
+    $('#ECU-alter').children().remove();
+    Object.keys(ECUList).forEach((el) => {
+        $('#ECU-alter').append(`<div class="item"><i class="bars icon handle"></i><div class="content">${ECUList[el]}</div></div>`);
+    });
+    if (vehicleTypeList[$(e.target).text()]) {
+        vehicleTypeList[$(e.target).text()].forEach((el) => {
+            $('#ECU-done').append(`<div class="item"><i class="bars icon handle"></i><div class="content">${ECUList[el]}</div></div>`);
+            $('#ECU-alter').children(`:contains('${ECUList[el]}')`).remove();
+        });
+    }
+}
+
+function initUI() {
+    db.selectAll('ECU', (err, result) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        ECUList = {};
+        (result.recordset).forEach((el) => {
+            ECUList[el.ID] = el.ECUName;
+        });
+    });
+    db.selectAll('VehicleType', (err, result) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        $('#vehicle-list').children().remove();
+        vehicleTypeList = {};
+        (result.recordset).forEach((el) => {
+            $('#vehicle-list').append(`<a class="item">${el.VehicleType}</a>`);
+            $('#vehicle-list .item:last').on('click', menuItemActive);
+            const l = [];
+            el.ECUConfig.split(',').forEach((item) => {
+                l.push(+item);
+            });
+            vehicleTypeList[el.VehicleType] = l;
+        });
+    });
 }
 
 $(() => {
@@ -43,7 +72,7 @@ $(() => {
         $('#ECU-menu').addClass('active');
     });
 
-    $('.menu .item').on('click', menuItemActive);
+    // $('.menu .item').on('click', menuItemActive);
 
     $('#add-btn').on('click', () => {
         const vehicleType = $('input').val();
@@ -60,29 +89,23 @@ $(() => {
             return;
         }
         $('#vehicle-list').find(`:contains("${vehicleType}")`).remove();
+        $('#ECU-done').children().remove();
+        $('#ECU-alter').children().remove();
     });
 
-    $('#apply-btn').on('click', () => {
-        sql.connect(config).then(() => {
-            sql.query('select * from VehicleInfo');
-        }).then((result) => {
-            console.dir(result);
-        }).catch((err) => {
-            console.error(err);
-        });
+    $('#init-btn').on('click', () => {
+        initUI();
     });
 
-    const ECUDone = document.getElementById('ECU-done');
-    const ECUAlter = document.getElementById('ECU-alter');
-    const ECUDoneSortable = Sortable.create(ECUDone, {
+    Sortable.create(document.getElementById('ECU-done'), {
         group: 'ECU',
-        animation: 100,
+        animation: 150,
         scroll: true,
         handle: '.icon',
     });
-    const ECUAlterSortable = Sortable.create(ECUAlter, {
+    Sortable.create(document.getElementById('ECU-alter'), {
         group: 'ECU',
-        animation: 100,
+        animation: 150,
         scroll: true,
         handle: '.icon',
     });

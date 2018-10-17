@@ -19,6 +19,10 @@
                 <div class="ui grid main">
                     <div class="row">
                         <div class="column">
+                            <div class="ui input">
+                                <button class="ui primary icon button" id="init-btn"><i class="download icon"></i>
+                                    读取已有车型</button>
+                            </div>
                             <div class="ui action input">
                                 <input type="text" placeholder="车型号">
                                 <button class="ui green icon button" id="add-btn"><i class="add icon"></i></button>
@@ -29,8 +33,6 @@
                     <div class="row">
                         <div class="column">
                             <div class="ui secondary pointing menu" id="vehicle-list">
-                                <a class="item active">IEV4</a>
-                                <a class="item">IEV6E</a>
                             </div>
                         </div>
                     </div>
@@ -39,14 +41,6 @@
                             <div class="ui blue inverted segment">
                                 <div class="ui red ribbon label">已配置ECU列表</div>
                                 <div class="ui relaxed divided list" id="ECU-done">
-                                    <div class="item">
-                                        <i class="bars icon handle"></i>
-                                        <div class="content">ABS</div>
-                                    </div>
-                                    <div class="item">
-                                        <i class="bars icon handle"></i>
-                                        <div class="content">EPS</div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
