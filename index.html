@@ -19,10 +19,7 @@
                 <div class="ui grid main">
                     <div class="row">
                         <div class="column">
-                            <div class="ui input">
-                                <button class="ui primary icon button" id="init-btn"><i class="download icon"></i>
-                                    读取已有车型</button>
-                            </div>
+                            <button class="ui inverted primary button" id="init-btn"><i class="download icon"></i>读取已有车型</button>
                             <div class="ui action input">
                                 <input type="text" placeholder="车型号">
                                 <button class="ui green icon button" id="add-btn"><i class="add icon"></i></button>
@@ -48,33 +45,13 @@
                             <div class="ui grey inverted segment">
                                 <div class="ui red ribbon label">备选ECU列表</div>
                                 <div class="ui relaxed divided list" id="ECU-alter">
-                                    <div class="item">
-                                        <i class="bars icon handle"></i>
-                                        <div class="content">LBC</div>
-                                    </div>
-                                    <div class="item">
-                                        <i class="bars icon handle"></i>
-                                        <div class="content">PCU</div>
-                                    </div>
-                                    <div class="item">
-                                        <i class="bars icon handle"></i>
-                                        <div class="content">SRS</div>
-                                    </div>
-                                    <div class="item">
-                                        <i class="bars icon handle"></i>
-                                        <div class="content">TBOX</div>
-                                    </div>
-                                    <div class="item">
-                                        <i class="bars icon handle"></i>
-                                        <div class="content">VCU</div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="right aligned column">
-                            <button class="ui inverted green button" id="apply-btn"><i class="checkmark icon"></i>应用</button>
+                            <button class="ui inverted green button" id="apply-btn"><i class="checkmark icon"></i>保存当前车型</button>
                         </div>
                     </div>
                 </div>
@@ -83,9 +60,15 @@
                 <div class="ui info message">
                     <div class="header"><i class="info circle icon"></i>提示</div>
                     <ul class="list">
-                        <li>计算“容积绝热指数”需要首先输入“进/排气温度”和“进/排气压力”</li>
+                        <li>错误信息</li>
                     </ul>
                 </div>
+            </div>
+            <div class="ui hidden error message">
+                <i class="close icon"></i>
+                <div class="header"><i class="times circle icon"></i>错误</div>
+                <ul class="list">
+                </ul>
             </div>
         </div>
     </body>
