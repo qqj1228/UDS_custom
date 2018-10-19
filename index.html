@@ -20,6 +20,7 @@
                     <div class="row">
                         <div class="column">
                             <button class="ui inverted primary button" id="init-btn"><i class="download icon"></i>读取已有车型</button>
+                            <button class="ui inverted green button" id="apply-btn"><i class="checkmark icon"></i>保存当前车型</button>
                             <div class="ui action input">
                                 <input type="text" placeholder="车型号">
                                 <button class="ui green icon button" id="add-btn"><i class="add icon"></i></button>
@@ -49,19 +50,38 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="right aligned column">
-                            <button class="ui inverted green button" id="apply-btn"><i class="checkmark icon"></i>保存当前车型</button>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="ui tab" data-tab="ECU-tab">
-                <div class="ui info message">
-                    <div class="header"><i class="info circle icon"></i>提示</div>
-                    <ul class="list">
-                        <li>错误信息</li>
-                    </ul>
+                <div class="ui grid main">
+                    <div class="row">
+                        <div class="column">
+                            <button class="ui inverted primary button" id="init-ECU-btn"><i class="download icon"></i>读取已有ECU</button>
+                            <button class="ui inverted green button" id="apply-ECU-btn"><i class="checkmark icon"></i>保存当前ECU</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="column">
+                            <div class="ui secondary pointing menu" id="ECU-list">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="two column row">
+                        <div class="column">
+                            <div class="ui blue inverted segment">
+                                <div class="ui red ribbon label">已配置检测项目列表</div>
+                                <div class="ui relaxed divided list" id="test-done">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="ui grey inverted segment">
+                                <div class="ui red ribbon label">备选检测项目列表</div>
+                                <div class="ui relaxed divided list" id="test-alter">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="ui hidden error message">

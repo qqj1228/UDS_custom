@@ -3,5 +3,8 @@
     "password": "sh49",
     "server": "127.0.0.1",
     "database": "JAC_UDS",
-    "port": 1433
+    "port": 1433,
+    "options": {
+        "encrypt": false
+    }
 }

@@ -1,23 +1,43 @@
+const electron = require('electron');
+
 const {
     app,
     BrowserWindow,
     ipcMain,
     systemPreferences,
-} = require('electron');
+    Menu,
+} = electron;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
 
+let isDev = false;
+for (let i = 0; i < process.argv.length; i++) {
+    isDev = process.argv[i].indexOf('inspect') > -1;
+    if (isDev) {
+        break;
+    }
+}
+
 function createWindow() {
+    // 获取主显示设备分辨率
+    const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize;
+
     // 创建浏览器窗口。
-    win = new BrowserWindow({width: 800, height: 600});
+    win = new BrowserWindow({
+        width: Math.round(width * 0.8),
+        height: Math.round(height * 0.8),
+        backgroundColor: systemPreferences.getColor('window'),
+    });
 
     // 然后加载应用的 index.html。
     win.loadFile('index.html');
 
     // 打开开发者工具
-    win.webContents.openDevTools();
+    if (isDev) {
+        win.webContents.openDevTools();
+    }
 
     // 当 window 被关闭，这个事件会被触发。
     win.on('closed', () => {
@@ -31,7 +51,12 @@ function createWindow() {
 // Electron 会在初始化后并准备
 // 创建浏览器窗口时，调用这个函数。
 // 部分 API 在 ready 事件触发后才能使用。
-app.on('ready', createWindow);
+app.on('ready', () => {
+    if (!isDev) {
+        Menu.setApplicationMenu(null);
+    }
+    createWindow();
+});
 
 // 当全部窗口关闭时退出。
 app.on('window-all-closed', () => {

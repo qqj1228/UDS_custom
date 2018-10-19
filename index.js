@@ -3,9 +3,21 @@
 const ipc = require('electron').ipcRenderer;
 const Sortable = require('sortablejs');
 const db = require('./db');
+// ECU配置页使用
+// {ECU名称: 全部的检测项目列表}
+const {testInfo} = require('./testInfo');
 
-let vehicleTypeList = {};
-let ECUList = {};
+// 车型配置页使用
+// {车型号: ECU配置}
+let vehicleTypeObj = {};
+
+// 车型配置页使用
+// {ECU的ID: ECU名称}
+let ECUNameObj = {};
+
+// ECU配置页使用
+// {ECU名称: 检测项目配置}
+let ECUObj = {};
 
 function showError(err) {
     $('.error.message').find('li').remove();
@@ -20,15 +32,39 @@ function menuItemActive(e) {
     $('#ECU-done').children().remove();
     $('#ECU-alter').children().remove();
     let item = '';
-    Object.keys(ECUList).forEach((el) => {
-        item = `<div class="item" data="${el}"><i class="bars icon handle"></i><div class="content">${ECUList[el]}</div></div>`;
+    Object.keys(ECUNameObj).forEach((el) => {
+        item = `<div class="item" data="${el}"><i class="bars icon handle"></i><div class="content">${ECUNameObj[el]}</div></div>`;
         $('#ECU-alter').append(item);
     });
-    if (vehicleTypeList[$(e.target).text()]) {
-        vehicleTypeList[$(e.target).text()].forEach((el) => {
-            item = `<div class="item" data="${el}"><i class="bars icon handle"></i><div class="content">${ECUList[el]}</div></div>`;
+    if (vehicleTypeObj[$(e.target).text()]) {
+        vehicleTypeObj[$(e.target).text()].forEach((el) => {
+            item = `<div class="item" data="${el}"><i class="bars icon handle"></i><div class="content">${ECUNameObj[el]}</div></div>`;
             $('#ECU-done').append(item);
-            $('#ECU-alter').children(`:contains('${ECUList[el]}')`).remove();
+            $('#ECU-alter').children(`:contains('${ECUNameObj[el]}')`).remove();
+        });
+    }
+}
+
+function ECUItemActive(e) {
+    $(e.target).addClass('active').closest('.ui.menu').find('.item')
+        .not($(e.target))
+        .removeClass('active');
+    $('#test-done').children().remove();
+    $('#test-alter').children().remove();
+    let item = '';
+    const ECUName = $(e.target).text();
+    if (testInfo[ECUName]) {
+        const {length} = testInfo[ECUName];
+        for (let i = 0; i < length; i++) {
+            item = `<div class="item" data="${i + 1}"><i class="bars icon handle"></i><div class="content">${testInfo[ECUName][i]}</div></div>`;
+            $('#test-alter').append(item);
+        }
+    }
+    if (ECUObj[ECUName]) {
+        ECUObj[ECUName].forEach((el) => {
+            item = `<div class="item" data="${el}"><i class="bars icon handle"></i><div class="content">${testInfo[ECUName][el - 1]}</div></div>`;
+            $('#test-done').append(item);
+            $('#test-alter').children(`:contains('${el}')`).remove();
         });
     }
 }
@@ -39,9 +75,9 @@ function initUI() {
             showError(err);
             return;
         }
-        ECUList = {};
+        ECUNameObj = {};
         (result.recordset).forEach((el) => {
-            ECUList[el.ID] = el.ECUName;
+            ECUNameObj[el.ID] = el.ECUName;
         });
         db.selectAll('VehicleType', (err1, result1) => {
             if (err1) {
@@ -50,22 +86,54 @@ function initUI() {
             }
             const current = $('#vehicle-list').find('.item.active').text();
             $('#vehicle-list').children().remove();
-            vehicleTypeList = {};
+            vehicleTypeObj = {};
             (result1.recordset).forEach((el) => {
                 $('#vehicle-list').append(`<a class="item">${el.VehicleType}</a>`);
                 $('#vehicle-list .item:last').on('click', menuItemActive);
                 const l = [];
                 el.ECUConfig.split(',').forEach((item) => {
-                    l.push(+item);
+                    if (item) {
+                        l.push(+item);
+                    }
                 });
-                vehicleTypeList[el.VehicleType] = l;
+                vehicleTypeObj[el.VehicleType] = l;
             });
-            $('#init-btn').removeClass('loading');
-            $('#apply-btn').removeClass('loading');
             if (current) {
                 $('#vehicle-list').find(`:contains("${current}")`).addClass('active');
             }
+            $('#init-btn').removeClass('loading');
+            $('#apply-btn').removeClass('loading');
         });
+    });
+}
+
+function initECU() {
+    db.selectAll('ECU', (err, result) => {
+        if (err) {
+            showError(err);
+            return;
+        }
+        ECUObj = {};
+        (result.recordset).forEach((el) => {
+            const l = [];
+            el.TestConfig.split(',').forEach((item) => {
+                if (item) {
+                    l.push(+item);
+                }
+            });
+            ECUObj[el.ECUName] = l;
+        });
+        const current = $('#ECU-list').find('.item.active').text();
+        $('#ECU-list').children().remove();
+        Object.keys(ECUObj).forEach((el) => {
+            $('#ECU-list').append(`<a class="item">${el}</a>`);
+            $('#ECU-list .item:last').on('click', ECUItemActive);
+        });
+        if (current) {
+            $('#ECU-list').find(`:contains("${current}")`).addClass('active');
+        }
+        $('#init-ECU-btn').removeClass('loading');
+        $('#apply-ECU-btn').removeClass('loading');
     });
 }
 
@@ -92,8 +160,12 @@ $(() => {
     });
 
     $('#add-btn').on('click', () => {
-        const vehicleType = $('input').val();
-        if (vehicleType === '') {
+        const vehicleType = $('[data-tab="vehicle-tab"] input').val();
+        const l = [];
+        $('#vehicle-list').children().each((index, el) => {
+            l.push($(el).text());
+        });
+        if (vehicleType === '' || l.indexOf(vehicleType) >= 0) {
             return;
         }
         $('#vehicle-list').append(`<a class="item">${vehicleType}</a>`);
@@ -101,7 +173,7 @@ $(() => {
     });
 
     $('#del-btn').on('click', () => {
-        const vehicleType = $('input').val();
+        const vehicleType = $('[data-tab="vehicle-tab"] input').val();
         const item = $('#vehicle-list').find(`:contains("${vehicleType}")`);
         if (vehicleType === '' || $(item).length < 1) {
             return;
@@ -121,6 +193,11 @@ $(() => {
         initUI();
     });
 
+    $('#init-ECU-btn').on('click', () => {
+        $('#init-ECU-btn').addClass('loading');
+        initECU();
+    });
+
     $('#apply-btn').on('click', () => {
         $('#apply-btn').addClass('loading');
         const current = $('#vehicle-list').find('.item.active').text();
@@ -128,7 +205,7 @@ $(() => {
         $('#ECU-done').children().each((index, el) => {
             ecuDone.push(+$(el).attr('data'));
         });
-        if (current in vehicleTypeList) {
+        if (current in vehicleTypeObj) {
             db.update({ECUConfig: ecuDone.join(',')}, {VehicleType: current}, 'VehicleType', (err) => {
                 if (err) {
                     showError(err);
@@ -147,6 +224,32 @@ $(() => {
         }
     });
 
+    $('#apply-ECU-btn').on('click', () => {
+        $('#apply-ECU-btn').addClass('loading');
+        const current = $('#ECU-list').find('.item.active').text();
+        const testDone = [];
+        $('#test-done').children().each((index, el) => {
+            testDone.push(+$(el).attr('data'));
+        });
+        if (current in ECUObj) {
+            db.update({TestConfig: testDone.join(',')}, {ECUName: current}, 'ECU', (err) => {
+                if (err) {
+                    showError(err);
+                    return;
+                }
+                initECU();
+            });
+        } else {
+            db.insert({ECUName: current, TestConfig: testDone.join(',')}, 'ECU', (err) => {
+                if (err) {
+                    showError(err);
+                    return;
+                }
+                initECU();
+            });
+        }
+    });
+
     Sortable.create(document.getElementById('ECU-done'), {
         group: 'ECU',
         animation: 150,
@@ -155,6 +258,19 @@ $(() => {
     });
     Sortable.create(document.getElementById('ECU-alter'), {
         group: 'ECU',
+        animation: 150,
+        scroll: true,
+        handle: '.icon',
+    });
+
+    Sortable.create(document.getElementById('test-done'), {
+        group: 'test',
+        animation: 150,
+        scroll: true,
+        handle: '.icon',
+    });
+    Sortable.create(document.getElementById('test-alter'), {
+        group: 'test',
         animation: 150,
         scroll: true,
         handle: '.icon',
