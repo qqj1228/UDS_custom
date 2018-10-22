@@ -199,8 +199,11 @@ $(() => {
     });
 
     $('#apply-btn').on('click', () => {
-        $('#apply-btn').addClass('loading');
         const current = $('#vehicle-list').find('.item.active').text();
+        if (current === '') {
+            return;
+        }
+        $('#apply-btn').addClass('loading');
         const ecuDone = [];
         $('#ECU-done').children().each((index, el) => {
             ecuDone.push(+$(el).attr('data'));
@@ -225,8 +228,11 @@ $(() => {
     });
 
     $('#apply-ECU-btn').on('click', () => {
-        $('#apply-ECU-btn').addClass('loading');
         const current = $('#ECU-list').find('.item.active').text();
+        if (current === '') {
+            return;
+        }
+        $('#apply-ECU-btn').addClass('loading');
         const testDone = [];
         $('#test-done').children().each((index, el) => {
             testDone.push(+$(el).attr('data'));

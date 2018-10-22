@@ -3,6 +3,7 @@ semantic/src
 semantic/tasks
 semantic/*.*
 package-lock.json
+dist/
 
 # Logs
 logs

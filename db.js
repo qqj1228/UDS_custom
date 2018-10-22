@@ -3,15 +3,22 @@
 const mssql = require('mssql');
 const fs = require('fs');
 
-let config = {};
-
-fs.readFile('./config.json', 'utf8', (err, data) => {
-    if (err) {
-        console.error(err);
-        return;
-    }
-    config = JSON.parse(data);
-});
+// 默认数据库配置文件
+let config = {
+    user: 'sa',
+    password: 'sh49',
+    server: '127.0.0.1',
+    database: 'JAC_UDS',
+    port: 1433,
+    options: {encrypt: false},
+};
+// 读取./config/db.json文件
+const path = `${__dirname}/config/db.json`;
+if (fs.existsSync(path)) {
+    config = JSON.parse(fs.readFileSync(path, 'utf8'));
+} else {
+    console.warn('Can not find ./config/db.json, using default database setting.');
+}
 
 /**
  * 连接数据库

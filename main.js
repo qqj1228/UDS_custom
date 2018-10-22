@@ -6,6 +6,7 @@ const {
     ipcMain,
     systemPreferences,
     Menu,
+    globalShortcut,
 } = electron;
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -26,6 +27,7 @@ function createWindow() {
 
     // 创建浏览器窗口。
     win = new BrowserWindow({
+        icon: `${__dirname}/asset/img/tool_256px.ico`,
         width: Math.round(width * 0.8),
         height: Math.round(height * 0.8),
         backgroundColor: systemPreferences.getColor('window'),
@@ -56,6 +58,9 @@ app.on('ready', () => {
         Menu.setApplicationMenu(null);
     }
     createWindow();
+    globalShortcut.register('CmdOrCtrl+F12', () => {
+        win.webContents.openDevTools();
+    });
 });
 
 // 当全部窗口关闭时退出。

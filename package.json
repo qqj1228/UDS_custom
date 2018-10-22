@@ -9,7 +9,17 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "buildDependenciesFromSource": true,
+    "asar": false,
+    "win": {
+      "target": "zip",
+      "icon": "./asset/img/tool_256px.ico"
+    }
   },
   "keywords": [
     "uds"
@@ -19,6 +29,7 @@
   "devDependencies": {
     "ajv": "^6.0.0",
     "electron": "^3.0.3",
+    "electron-builder": "^20.28.4",
     "eslint": "^5.6.1",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
