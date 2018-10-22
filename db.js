@@ -2,6 +2,9 @@
 
 const mssql = require('mssql');
 const fs = require('fs');
+const {logger} = require('./logConfig');
+
+const logging = logger('db.js');
 
 // 默认数据库配置文件
 let config = {
@@ -13,11 +16,19 @@ let config = {
     options: {encrypt: false},
 };
 // 读取./config/db.json文件
-const path = `${__dirname}/config/db.json`;
+let path = './config/db.json';
 if (fs.existsSync(path)) {
     config = JSON.parse(fs.readFileSync(path, 'utf8'));
 } else {
-    console.warn('Can not find ./config/db.json, using default database setting.');
+    path = `${__dirname}/config/db.json`;
+    if (fs.existsSync(path)) {
+        console.info(`Using ${__dirname}/config/db.json`);
+        logging.info(`Using ${__dirname}/config/db.json`);
+        config = JSON.parse(fs.readFileSync(path, 'utf8'));
+    } else {
+        console.warn('Can not find "/config/db.json", using default database setting.');
+        logging.warn('Can not find "/config/db.json", using default database setting.');
+    }
 }
 
 /**
@@ -56,12 +67,14 @@ function querySql(sql, params, callBack) {
         ps.prepare(sql, (err) => {
             if (err) {
                 console.error(err);
+                logging.error(err);
             }
             ps.execute(params, (err1, recordset) => {
                 callBack(err1, recordset);
                 ps.unprepare((err2) => {
                     if (err2) {
                         console.error(err2);
+                        logging.error(err2);
                     }
                 });
             });
@@ -96,16 +109,19 @@ function select(tableName, topNumber, whereSql, params, orderSql, callBack) {
             });
         }
         sql += orderSql;
-        console.info(sql);
+        console.info(`SQL: ${sql}`);
+        logging.info(`SQL: ${sql}`);
         ps.prepare(sql, (err) => {
             if (err) {
                 console.error(err);
+                logging.error(err);
             }
             ps.execute(params, (err1, recordset) => {
                 callBack(err1, recordset);
                 ps.unprepare((err2) => {
                     if (err2) {
                         console.error(err2);
+                        logging.error(err2);
                     }
                 });
             });
@@ -125,12 +141,14 @@ function selectAll(tableName, callBack) {
         ps.prepare(sql, (err) => {
             if (err) {
                 console.error(err);
+                logging.error(err);
             }
             ps.execute('', (err1, recordset) => {
                 callBack(err1, recordset);
                 ps.unprepare((err2) => {
                     if (err2) {
                         console.error(err2);
+                        logging.error(err2);
                     }
                 });
             });
@@ -167,16 +185,19 @@ function insert(insertObj, tableName, callBack) {
             });
         }
         sql = `${sql.substring(0, sql.length - 1)})`;
-        console.info(sql);
+        console.info(`SQL: ${sql}`);
+        logging.info(`SQL: ${sql}`);
         ps.prepare(sql, (err) => {
             if (err) {
                 console.error(err);
+                logging.error(err);
             }
             ps.execute(insertObj, (err1, recordset) => {
                 callBack(err1, recordset);
                 ps.unprepare((err2) => {
                     if (err2) {
                         console.error(err2);
+                        logging.error(err2);
                     }
                 });
             });
@@ -219,16 +240,19 @@ function update(updateObj, whereObj, tableName, callBack) {
             });
         }
         sql = sql.substring(0, sql.length - 5);
-        console.info(sql);
+        console.info(`SQL: ${sql}`);
+        logging.info(`SQL: ${sql}`);
         ps.prepare(sql, (err) => {
             if (err) {
                 console.error(err);
+                logging.error(err);
             }
             ps.execute(updateObj, (err1, recordset) => {
                 callBack(err1, recordset);
                 ps.unprepare((err2) => {
                     if (err2) {
                         console.error(err2);
+                        logging.error(err2);
                     }
                 });
             });
@@ -257,16 +281,24 @@ function del(whereSql, params, tableName, callBack) {
             });
         }
         sql += whereSql;
-        console.info(sql);
+        let paramsLog = ', params: {';
+        Object.keys(params).forEach((el) => {
+            paramsLog += `${el}: ${params[el]}`;
+        });
+        paramsLog += '}';
+        console.info(`SQL: ${sql}${paramsLog}`);
+        logging.info(`SQL: ${sql}${paramsLog}`);
         ps.prepare(sql, (err) => {
             if (err) {
                 console.error(err);
+                logging.error(err);
             }
             ps.execute(params, (err1, recordset) => {
                 callBack(err1, recordset);
                 ps.unprepare((err2) => {
                     if (err2) {
                         console.error(err2);
+                        logging.error(err2);
                     }
                 });
             });

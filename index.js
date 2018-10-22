@@ -3,9 +3,11 @@
 const ipc = require('electron').ipcRenderer;
 const Sortable = require('sortablejs');
 const db = require('./db');
+const {logger} = require('./logConfig');
 // ECU配置页使用
 // {ECU名称: 全部的检测项目列表}
 const {testInfo} = require('./testInfo');
+
 
 // 车型配置页使用
 // {车型号: ECU配置}
@@ -19,10 +21,13 @@ let ECUNameObj = {};
 // {ECU名称: 检测项目配置}
 let ECUObj = {};
 
+const logging = logger('index.js');
+
 function showError(err) {
     $('.error.message').find('li').remove();
     $('.error.message').find('.list').append(`<li>${err}</li>`);
     $('.error.message').removeClass('hiden');
+    logging.info('err');
 }
 
 function menuItemActive(e) {

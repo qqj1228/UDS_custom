@@ -4,6 +4,7 @@ semantic/tasks
 semantic/*.*
 package-lock.json
 dist/
+log/
 
 # Logs
 logs

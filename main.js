@@ -58,7 +58,7 @@ app.on('ready', () => {
         Menu.setApplicationMenu(null);
     }
     createWindow();
-    globalShortcut.register('CmdOrCtrl+F12', () => {
+    globalShortcut.register('CmdOrCtrl+shift+i', () => {
         win.webContents.openDevTools();
     });
 });
