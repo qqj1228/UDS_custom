@@ -38,6 +38,7 @@ if (fs.existsSync(path)) {
 function getConnection(callback) {
     const con = new mssql.ConnectionPool(config, (err) => {
         if (err) {
+            logging.error(err.message);
             throw err;
         }
         if (callback) {
@@ -67,14 +68,14 @@ function querySql(sql, params, callBack) {
         ps.prepare(sql, (err) => {
             if (err) {
                 console.error(err);
-                logging.error(err);
+                logging.error(err.message);
             }
             ps.execute(params, (err1, recordset) => {
                 callBack(err1, recordset);
                 ps.unprepare((err2) => {
                     if (err2) {
                         console.error(err2);
-                        logging.error(err2);
+                        logging.error(err2.message);
                     }
                 });
             });
@@ -114,14 +115,14 @@ function select(tableName, topNumber, whereSql, params, orderSql, callBack) {
         ps.prepare(sql, (err) => {
             if (err) {
                 console.error(err);
-                logging.error(err);
+                logging.error(err.message);
             }
             ps.execute(params, (err1, recordset) => {
                 callBack(err1, recordset);
                 ps.unprepare((err2) => {
                     if (err2) {
                         console.error(err2);
-                        logging.error(err2);
+                        logging.error(err2.message);
                     }
                 });
             });
@@ -141,7 +142,7 @@ function selectAll(tableName, callBack) {
         ps.prepare(sql, (err) => {
             if (err) {
                 console.error(err);
-                logging.error(err);
+                logging.error(err.message);
             }
             ps.execute('', (err1, recordset) => {
                 callBack(err1, recordset);
@@ -190,14 +191,14 @@ function insert(insertObj, tableName, callBack) {
         ps.prepare(sql, (err) => {
             if (err) {
                 console.error(err);
-                logging.error(err);
+                logging.error(err.message);
             }
             ps.execute(insertObj, (err1, recordset) => {
                 callBack(err1, recordset);
                 ps.unprepare((err2) => {
                     if (err2) {
                         console.error(err2);
-                        logging.error(err2);
+                        logging.error(err2.message);
                     }
                 });
             });
@@ -245,14 +246,14 @@ function update(updateObj, whereObj, tableName, callBack) {
         ps.prepare(sql, (err) => {
             if (err) {
                 console.error(err);
-                logging.error(err);
+                logging.error(err.message);
             }
             ps.execute(updateObj, (err1, recordset) => {
                 callBack(err1, recordset);
                 ps.unprepare((err2) => {
                     if (err2) {
                         console.error(err2);
-                        logging.error(err2);
+                        logging.error(err2.message);
                     }
                 });
             });
@@ -291,14 +292,14 @@ function del(whereSql, params, tableName, callBack) {
         ps.prepare(sql, (err) => {
             if (err) {
                 console.error(err);
-                logging.error(err);
+                logging.error(err.message);
             }
             ps.execute(params, (err1, recordset) => {
                 callBack(err1, recordset);
                 ps.unprepare((err2) => {
                     if (err2) {
                         console.error(err2);
-                        logging.error(err2);
+                        logging.error(err2.message);
                     }
                 });
             });

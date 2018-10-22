@@ -27,7 +27,11 @@ function showError(err) {
     $('.error.message').find('li').remove();
     $('.error.message').find('.list').append(`<li>${err}</li>`);
     $('.error.message').removeClass('hiden');
-    logging.info('err');
+    if (err.message) {
+        logging.error(err.message);
+    } else {
+        logging.error(err);
+    }
 }
 
 function menuItemActive(e) {
