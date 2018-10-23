@@ -16,6 +16,8 @@
   "build": {
     "buildDependenciesFromSource": true,
     "asar": false,
+    "files": "!log${/*}",
+    "npmRebuild": false,
     "win": {
       "target": "zip",
       "icon": "./asset/img/tool_256px.ico"
